@@ -63,12 +63,12 @@ def update(val):
     n = slider_n.val
 
     state = odeint(dydt_system, init, t)
-    ax1.cla()
+    # ax1.cla()
     ax1.plot(state[:, 0], state[:, 1], 'r-')
     fig1.canvas.draw()
 
     state = odeint(dydt_system, init, t)
-    ax1.cla()
+    # ax1.cla()
     ax1.plot(state[:, 0], state[:, 1], 'r-')
     fig1.canvas.draw()
 
