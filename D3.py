@@ -49,35 +49,35 @@ def system (v, t):
 fig, ax = plt.subplots()
 
 t = arange(0, 30, .1)
-    #[x1,x2, y, t]
+        #[x1,x2, y, t]
 init = [20, 5, 2, 3]
 state = odeint(system, init, t)
 
 #plots dX1/dt graph
 plot(t, state[:, 0], 'y-')
-plt.ylabel('response')
-plt.xlabel('time')
+plt.ylabel('Aphids')
+plt.xlabel('Time')
 plt.title("dX1/dt")
 figure()
 
 #plots dX2/dt graph
 plot(t, state[:, 1], 'r-')
-plt.ylabel('response')
-plt.xlabel('time')
+plt.ylabel('Weevil')
+plt.xlabel('Time')
 plt.title("dX2/dt")
 figure()
 
 #plots dY/dt graph
 plot(t, state[:, 2], 'c-')
-plt.ylabel('response')
-plt.xlabel('time')
+plt.ylabel('Bath. SPP')
+plt.xlabel('Time')
 plt.title("dY/dt")
 figure()
 
 #plots dZ/dt graph
 plot(t, state[:, 3], 'g-')
-plt.ylabel('response')
-plt.xlabel('time')
+plt.ylabel('Alfalfa')
+plt.xlabel('Time')
 plt.title("dZ/dt")
 
 
