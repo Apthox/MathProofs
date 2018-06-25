@@ -39,7 +39,8 @@ def system(v, t):
     dX2 = (-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * prey_gain(H) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
 
     # dy/dt cyan graph
-    dY = (-a * Y) + ((b * X1) * (Y / (Y + 1))) + (p * (1 / prey_gain(H))) * (Y / (Y + 1))
+            #1          2           3               4                   5                       6               7
+    dY = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n)) )+ ((p * (1 / prey_gain(H))) * (Y / (Y + 1) * (1 - (Y / n))))
 
     # dz/dt green graph
     dZ = (f1 * X1) + (f2 * X2) - (m * Z)
