@@ -67,7 +67,7 @@ def system(v, t):
 fig, axs = plt.subplots(2, 2, figsize=(10, 10))
 
 t = np.arange(0, 30, .1)
-init = [20, 2, 2]  # [x1, y, t]
+init = [2, 2, 2]  # [x1, y, t]
 state = odeint(system, init, t)
 
 axs[0, 0].plot(t, state[:, 0], color='#800000')
