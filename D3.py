@@ -10,16 +10,16 @@ b = 0.1  # Benefit to the predator of predator adult consumption rate of weevil
 c = 0.3  # Negative impact of early harvesting on the weevil population
 p = .5  # predator adult population gain from nymphs
 n = 10
-n1 = 100
+k = 100
 ke = .1635  # constant
 H = .8
 c1 = .1  # Negative impact on the aphids of predator consumption of aphids
 c2 = .03  # Negative impact on the weevil of predator consumption of weevil
-h1 = .2
+j = .2
 h2 = .2
-e1 = .15  # mortality of aphids
+d = .15  # mortality of aphids
 e2 = .15  # mortality of weevil
-f1 = .15  # aphids pest consumption rate of alfalfa
+l = .15  # aphids pest consumption rate of alfalfa
 f2 = .15  # weevil pest consumption rate of alfalfa
 m = .5
 
@@ -33,7 +33,7 @@ def prey_gain(h):
 def system(v, t):
     X1, X2, Y, Z = v
     # dx1/dt yellow graph
-    dX1 = (-e1 * X1) - (c1 * Y * (X1 / (1 + X1))) + (prey_gain(H) * h1 * (X1 / (1 + X1))) + (f1 * (X1 / (1 + X1)) * Z)
+    dX1 = (-d * X1) - (c1 * Y * (X1 / (1 + X1))) + (prey_gain(H) * j * (X1 / (1 + X1))) + (l * (X1 / (1 + X1)) * Z)
 
     # dx2/dt red graph
     dX2 = (-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * prey_gain(H) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
@@ -43,7 +43,7 @@ def system(v, t):
     dY = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n)) )+ ((p * (1 / prey_gain(H))) * (Y / (Y + 1) * (1 - (Y / n))))
 
     # dz/dt green graph
-    dZ = (f1 * X1) + (f2 * X2) - (m * Z)
+    dZ = (l * X1) + (f2 * X2) - (m * Z)
 
     return [dX1, dX2, dY, dZ]
 
