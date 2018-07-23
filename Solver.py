@@ -80,8 +80,10 @@ range_f2 = [.01, 1]
 m = .5
 range_m = [.01, 1]
 
+
 def system (v):
     x1, X2, Y, Z = v
+
 
     F = empty(4)
     # X1
@@ -92,6 +94,6 @@ def system (v):
 
     return F
 
-zGuess = array([0,0,0,0])
+zGuess = array([5,5,5,5])
 z = fsolve(system,zGuess)
 print(z)
