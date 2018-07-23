@@ -3,56 +3,64 @@ import numpy as np
 from scipy.integrate import odeint
 from matplotlib.widgets import Slider, Button, RadioButtons
 
-a = .105  # predator adult mortality rate
-range_a = [0.01, 1]
+a = 0.25  # predator adult mortality rate
+range_a = [0.001, 1]
 
-b = 0.1  # Benefit to the predator of predator adult consumption rate of weevil
-range_b = [.01, 1]
+b1 = 0.3  # Predator consumption rate of aphid
+range_b1 = [.001, 1]
 
-c = 0.3  # Negative impact of early harvesting on the weevil population (not being used)
-range_c = [.01, 1]
+b2 = 0.15  # Predator consumption rate of weevil
+range_b2 = [.001, 1]
 
-p = .5  # predator adult population gain from nymphs
-range_p = [.01, 1]
+c = 0.12  # Predator population gain (wasp)
+range_c = [.001, 1]
 
-n = 10
-range_n = [1, 10]
+d1 = .23  # Aphid mortality rate
+range_d1 = [.001, 1]
 
-n1 = 100
-range_n1 = [1, 250]
+d2 = .22  # Weevil mortality rate
+range_d2 = [.001, 1]
+
+g1 = .26  # mortality rate of aphid by predator(wasp)
+range_g1 = [.001, 1]
+
+g2 = .09  # mortality rate of weevil by predator(wasp)
+range_g2 = [.001, 1]
+
+j1 = .4  # population gain of aphids
+range_j1 = [.001, 1]
+
+j2 = .33  # population gain of weevils
+range_j2 = [.001, 1]
+
+k1 = .5  # benefit to aphids from alfalfa
+range_k1 = [.001, 1]
+
+k2 = .5  # benefit to weevils from alfalfa
+range_k2 = [.001, 1]
+
+l1 = .1  # aphid consumption rate of alfalfa
+range_l1 = [.001, 1]
+
+l2 = .1  # weevil consumption rate of alfalfa
+range_l2 = [.001, 1]
+
+H = .89  # diversity index
+range_H = [.001, 1]
+
+m = .30  # recovery coefficient of alfalfa
+range_m = [.001, 1]
+
+n1 = 10  # carrying capacity aphid
+range_n1 = [1, 30]
+
+n2 = 6  # carrying capacity weevil
+range_n2 = [1, 20]
+
+p = .20  # ratio of weevils killed by cut
+range_p = [.001, 1]
 
 ke = .1635  # constant
-
-H = .8
-range_H = [.01, 1]
-
-c1 = .15  # Negative impact on the aphids of predator consumption of aphids; previous values used: .1,2
-range_c1 = [.01, 1]
-
-# !
-c2 = .05  # Negative impact on the weevil of predator consumption of weevil; previous values used: .03
-range_c2 = [.01, 1]
-
-h1 = .5    # adult population gain (aphids)  # previous values used: .2
-range_h1 = [.01, 1]
-
-h2 = .3     # adult population gain (weevil) previous values used: .2
-range_h2 = [.01, 1]
-
-e1 = .15  # mortality of aphids; previous values used: .15, .3
-range_e1 = [.01, 1]
-
-e2 = .15  # mortality of weevil; previous values used: .15, .3
-range_e2 = [.01, 1]
-
-f1 = .2  # aphids pest consumption rate of alfalfa; previous values used: .15
-range_f1 = [.01, 1]
-
-f2 = .2  # weevil pest consumption rate of alfalfa; previous values used: .15,
-range_f2 = [.01, 1]
-
-m = .5
-range_m = [.01, 1]
 
 
 def prey_gain(h):
@@ -63,17 +71,16 @@ def prey_gain(h):
 def system(v, t):
     X1, X2, Y, Z = v
     # dx1/dt yellow graph
-    dX1 = (-e1 * X1) - (c1 * Y * (X1 / (1 + X1))) + (prey_gain(H) * h1 * (X1 / (1 + X1))) + (f1 * (X1 / (1 + X1)) * Z)
+    dX1 = (-d1 * X1) - ((g1 * Y) * (X1 / (1 + X1))) + (prey_gain(H) * j1 * X1) + (k1 * (X1 / (1 + X1)) * Z)
 
     # dx2/dt red graph
-    dX2 = (-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * prey_gain(H) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
+    dX2 = (-d2 * X2) - ((g2 * Y) * (X2 / (1 + X2))) + (prey_gain(H) * j2 * X2) + (k2 * (X2 / (1 + X2)) * Z) - (p * (X2 / (1 + X2)))
 
     # dy/dt cyan graph
-            #1          2           3               4                   5                       6               7
-    dY = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n)) )+ ((p * (1 / prey_gain(H))) * (Y / (Y + 1)))
+    dY = (-a * Y) + ((b1 * X1) * (Y / (1 + Y)) * (1 - (Y / n1))) + ((b2 * X2) * (Y / (1 + Y)) * (1 - (Y / n2))) + (c * Y)
 
     # dz/dt green graph
-    dZ = (f1 * X1) + (f2 * X2) - (m * Z)
+    dZ = (l1 * (X1 / (X1 + 1))) + (l2 * (X2 / (X2 + 1))) - (m * Z)
 
 
     return [dX1, dX2, dY, dZ]
@@ -81,8 +88,8 @@ def system(v, t):
 
 fig, axs = plt.subplots(2, 2, figsize=(10, 10))
 
-t = np.arange(0, 30, .1)
-init = [20, 5, 2, 3]  # [x1,x2, y, t]
+t = np.arange(0, 45, .1)
+init = [10, 5, 2, 0]  # [x1,x2, y, t]
 state = odeint(system, init, t)
 
 axs[0, 0].plot(t, state[:, 0], color='#800000')
@@ -103,69 +110,85 @@ axcolor = 'lightgoldenrodyellow'
 
 # LEFT - BOTTOM - LENGTH - HEIGHT
 ax_a = plt.axes([0.15, 0.95, 0.6, 0.03], facecolor=axcolor)
-ax_b = plt.axes([0.15, 0.9, 0.6, 0.03], facecolor=axcolor)
-ax_c = plt.axes([0.15, 0.85, 0.6, 0.03], facecolor=axcolor)
-ax_p = plt.axes([0.15, 0.8, 0.6, 0.03], facecolor=axcolor)
-ax_n = plt.axes([0.15, 0.75, 0.6, 0.03], facecolor=axcolor)
-ax_n1 = plt.axes([0.15, 0.7, 0.6, 0.03], facecolor=axcolor)
-ax_H = plt.axes([0.15, 0.65, 0.6, 0.03], facecolor=axcolor)
-ax_c1 = plt.axes([0.15, 0.6, 0.6, 0.03], facecolor=axcolor)
-ax_c2 = plt.axes([0.15, 0.55, 0.6, 0.03], facecolor=axcolor)
-ax_h1 = plt.axes([0.15, 0.5, 0.6, 0.03], facecolor=axcolor)
-ax_h2 = plt.axes([0.15, 0.45, 0.6, 0.03], facecolor=axcolor)
-ax_e1 = plt.axes([0.15, 0.4, 0.6, 0.03], facecolor=axcolor)
-ax_e2 = plt.axes([0.15, 0.35, 0.6, 0.03], facecolor=axcolor)
-ax_f1 = plt.axes([0.15, 0.3, 0.6, 0.03], facecolor=axcolor)
-ax_f2 = plt.axes([0.15, 0.25, 0.6, 0.03], facecolor=axcolor)
+ax_b1 = plt.axes([0.15, 0.9, 0.6, 0.03], facecolor=axcolor)
+ax_b2 = plt.axes([0.15, 0.85, 0.6, 0.03], facecolor=axcolor)
+ax_c = plt.axes([0.15, 0.80, 0.6, 0.03], facecolor=axcolor)
+ax_p = plt.axes([0.15, 0.75, 0.6, 0.03], facecolor=axcolor)
+ax_n1 = plt.axes([0.15, 0.70, 0.6, 0.03], facecolor=axcolor)
+ax_n2 = plt.axes([.15, 0.65, 0.6, 0.03], facecolor=axcolor)
+ax_H = plt.axes([0.15, 0.6, 0.6, 0.03], facecolor=axcolor)
+ax_d1 = plt.axes([0.15, 0.55, 0.6, 0.03], facecolor=axcolor)
+ax_d2 = plt.axes([0.15, 0.5, 0.6, 0.03], facecolor=axcolor)
+ax_g1 = plt.axes([0.15, 0.45, 0.6, 0.03], facecolor=axcolor)
+ax_g2 = plt.axes([0.15, 0.4, 0.6, 0.03], facecolor=axcolor)
+ax_j1 = plt.axes([0.15, 0.35, 0.6, 0.03], facecolor=axcolor)
+ax_j2 = plt.axes([0.15, 0.3, 0.6, 0.03], facecolor=axcolor)
+ax_k1 = plt.axes([0.15, 0.25, 0.6, 0.03], facecolor=axcolor)
+ax_k2 = plt.axes([0.15, 0.2, 0.6, 0.03], facecolor=axcolor)
+ax_l1 = plt.axes([0.15, 0.15, 0.6, 0.03], facecolor=axcolor)
+ax_l2 = plt.axes([0.15, 0.10, 0.6, 0.03], facecolor=axcolor)
+ax_m = plt.axes([0.15, 0.05, 0.6, 0.03], facecolor=axcolor)
 
 slider_a = Slider(ax_a, 'a ', range_a[0], range_a[1], valinit=a)
-slider_b = Slider(ax_b, 'b', range_b[0], range_b[1], valinit=b)
+slider_b1 = Slider(ax_b1, 'b1', range_b1[0], range_b1[1], valinit=b1)
+slider_b2 = Slider(ax_b2, 'b2', range_b2[0], range_b2[1], valinit=b2)
 slider_c = Slider(ax_c, 'c', range_c[0], range_c[1], valinit=c)
 slider_p = Slider(ax_p, 'p', range_p[0], range_p[1], valinit=p)
-slider_n = Slider(ax_n, 'n', range_n[0], range_n[1], valinit=n)
 slider_n1 = Slider(ax_n1, 'n1', range_n1[0], range_n1[1], valinit=n1)
+slider_n2 = Slider(ax_n2, 'n2', range_n2[0], range_n2[1], valinit=n2)
 slider_H = Slider(ax_H, 'H', range_H[0], range_H[1], valinit=H)
-slider_c1 = Slider(ax_c1, 'c1', range_c1[0], range_c1[1], valinit=c1)
-slider_c2 = Slider(ax_c2, 'c2', range_c2[0], range_c2[1], valinit=c2)
-slider_h1 = Slider(ax_h1, 'h1', range_h1[0], range_h1[1], valinit=h1)
-slider_h2 = Slider(ax_h2, 'h2', range_h2[0], range_h2[1], valinit=h2)
-slider_e1 = Slider(ax_e1, 'e1', range_e1[0], range_e1[1], valinit=e1)
-slider_e2 = Slider(ax_e2, 'e2', range_e2[0], range_e2[1], valinit=e2)
-slider_f1 = Slider(ax_f1, 'f1', range_f1[0], range_f1[1], valinit=f1)
-slider_f2 = Slider(ax_f2, 'f2', range_f2[0], range_f2[1], valinit=f2)
+slider_d1 = Slider(ax_d1, 'd1', range_d1[0], range_d1[1], valinit=d1)
+slider_d2 = Slider(ax_d2, 'd2', range_d2[0], range_d2[1], valinit=d2)
+slider_g1 = Slider(ax_g1, 'g1', range_g1[0], range_g1[1], valinit=g1)
+slider_g2 = Slider(ax_g2, 'g2', range_g2[0], range_g2[1], valinit=g2)
+slider_j1 = Slider(ax_j1, 'j1', range_j1[0], range_j1[1], valinit=j1)
+slider_j2 = Slider(ax_j2, 'j2', range_j2[0], range_j2[1], valinit=j2)
+slider_k1 = Slider(ax_k1, 'k1', range_k1[0], range_k1[1], valinit=k1)
+slider_k2 = Slider(ax_k2, 'k2', range_k2[0], range_k2[1], valinit=k2)
+slider_l1 = Slider(ax_l1, 'l1', range_l1[0], range_l1[1], valinit=l1)
+slider_l2 = Slider(ax_l2, 'l2', range_l2[0], range_l2[1], valinit=l2)
+slider_m = Slider(ax_m, 'm', range_m[0], range_m[1], valinit=m)
 
 
 def update(val):
     global a
     a = slider_a.val
-    global b
-    b = slider_b.val
+    global b1
+    b1 = slider_b1.val
+    global b2
+    b2 = slider_b2.val
     global c
     c = slider_c.val
     global p
     p = slider_p.val
-    global n
-    n = slider_n.val
     global n1
     n1 = slider_n1.val
-    global c1
-    c1 = slider_c1.val
-    global c2
-    c2 = slider_c2.val
+    global n2
+    n2 = slider_n2.val
+    global d1
+    d1 = slider_d1.val
+    global d2
+    d2 = slider_d2.val
+    global g1
+    g1 = slider_g1.val
+    global g2
+    g2 = slider_g2.val
     global H
     H = slider_H.val
-    global h1
-    h1 = slider_h1.val
-    global h2
-    h2 = slider_h2.val
-    global e1
-    e1 = slider_e1.val
-    global e2
-    e2 = slider_e2.val
-    global f1
-    f1 = slider_f1.val
-    global f2
-    f2 = slider_f2.val
+    global j1
+    j1 = slider_j1.val
+    global j2
+    j2 = slider_j2.val
+    global k1
+    k1 = slider_k1.val
+    global k2
+    k2 = slider_k2.val
+    global l1
+    l1 = slider_l1.val
+    global l2
+    l2 = slider_l2.val
+    global m
+    m = slider_m.val
 
     state = odeint(system, init, t)
 
@@ -189,19 +212,23 @@ def update(val):
 
 
 slider_a.on_changed(update)
-slider_b.on_changed(update)
+slider_b1.on_changed(update)
+slider_b2.on_changed(update)
 slider_c.on_changed(update)
 slider_p.on_changed(update)
-slider_n.on_changed(update)
 slider_n1.on_changed(update)
-slider_c1.on_changed(update)
-slider_c2.on_changed(update)
+slider_n2.on_changed(update)
+slider_d1.on_changed(update)
+slider_d2.on_changed(update)
 slider_H.on_changed(update)
-slider_h1.on_changed(update)
-slider_h2.on_changed(update)
-slider_e1.on_changed(update)
-slider_e2.on_changed(update)
-slider_f1.on_changed(update)
-slider_f2.on_changed(update)
+slider_g1.on_changed(update)
+slider_g2.on_changed(update)
+slider_j1.on_changed(update)
+slider_j2.on_changed(update)
+slider_k1.on_changed(update)
+slider_k2.on_changed(update)
+slider_l1.on_changed(update)
+slider_l2.on_changed(update)
+slider_m.on_changed(update)
 
 plt.show()
