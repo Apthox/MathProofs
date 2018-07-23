@@ -2,13 +2,10 @@ from sympy import var, solve, diff
 from scipy import e, linalg as LA
 import numpy as np
 
-
-
-
 X1, X2, Y, Z = var("X1 X2 Y Z")
 d, c1, ke, H, l, j = var('d c1 ke H l j')
 e2, c2, c, h2, f2 = var('e2 c2 c h2 f2')
-a, b, n, p, m = var('a b n p m')
+a, b, n, p, m, e = var('a b n p m e')
 
 a = .105  # predator adult mortality rate
 range_a = [0.01, 1]
@@ -49,8 +46,8 @@ range_h2 = [.01, 1]
 d = .15  # mortality of aphids; previous values used: .15, .3
 range_e1 = [.01, 1]
 
-e2 = .15  # mortality of weevil; previous values used: .15, .3
-range_e2 = [.01, 1]
+# e2 = .15  # mortality of weevil; previous values used: .15, .3
+# range_e2 = [.01, 1]
 
 l = .2  # aphids pest consumption rate of alfalfa; previous values used: .15
 range_f1 = [.01, 1]
@@ -61,90 +58,77 @@ range_f2 = [.01, 1]
 m = .5
 range_m = [.01, 1]
 
+E1 = (-d * X1) - (c1 * Y * (X1 / (1 + X1))) + (e ** (-ke * H) * j * (X1 / (1 + X1))) + (l * (X1 / (1 + X1)) * Z)
+E2 = (-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * e ** (-ke * H) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
+E3 = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n))) + ((p * (1 / e ** (-ke * H))) * (Y / (Y + 1)))
+E4 = (l * X1) + (f2 * X2) - (m * Z)
 
+A11 = diff(E1, X1)
+A12 = diff(E1, X2)
+A13 = diff(E1, Y)
+A14 = diff(E1, Z)
 
+A21 = diff(E2, X1)
+A22 = diff(E2, X2)
+A23 = diff(E2, Y)
+A24 = diff(E2, Z)
 
-f1 = (-d * X1) - (c1 * Y * (X1 / (1 + X1))) + (e ** (-ke * H) * j * (X1 / (1 + X1))) + (l * (X1 / (1 + X1)) * Z)
-f2 =(-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * e ** (-ke * H) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
-f3 = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n))) + ((p * (1 / e ** (-ke * H))) * (Y / (Y + 1)))
-f4 = (l * X1) + (f2 * X2) - (m * Z)
+A31 = diff(E3, X1)
+A32 = diff(E3, X2)
+A33 = diff(E3, Y)
+A34 = diff(E3, Z)
 
-print("Starting to solve!")
+A41 = diff(E4, X1)
+A42 = diff(E4, X2)
+A43 = diff(E4, Y)
+A44 = diff(E4, Z)
 
-A11= diff(f1,X1)
-A12= diff(f1,X2)
-A13= diff(f1,Y)
-A14= diff(f1,Z)
+# a = .105
+# b = 0.1
+# c = 0.3
+# p = .5
+# n = 10
+# k = 100
+# ke = .1635
+# H = .8
+# c1 = .15
+# c2 = .05
+# j = .5
+# h2 = .3
+# d = .15
+# e2 = .15
+# l = .2
 
+X1 = 0
+X2 = 0
+Y = 4.4
+Z = 0
+e = np.e
 
+SA11 = eval(str(A11))
+SA12 = eval(str(A12))
+SA13 = eval(str(A13))
+SA14 = eval(str(A14))
 
-A21= diff(f2,X1)
-A22= diff(f2,X2)
-A23= diff(f2,Y)
-A24= diff(f2,Z)
+SA21 = eval(str(A21))
+SA22 = eval(str(A22))
+SA23 = eval(str(A23))
+SA24 = eval(str(A24))
 
+SA31 = eval(str(A31))
+SA32 = eval(str(A32))
+SA33 = eval(str(A33))
+SA34 = eval(str(A34))
 
-A31= diff(f3,X1)
-A32= diff(f3,X2)
-A33= diff(f3,Y)
-A34= diff(f3,Z)
+SA41 = eval(str(A41))
+SA42 = eval(str(A42))
+SA43 = eval(str(A43))
+SA44 = eval(str(A44))
 
-A41= diff(f4,X1)
-A42= diff(f4,X2)
-A43= diff(f4,Y)
-A44= diff(f4,Z)
+J1 = np.matrix([[SA11, SA12, SA13, SA14], [SA21, SA22, SA23, SA24], [SA31, SA32, SA33, SA34],[SA41, SA42, SA43, SA44]])
+print(J1)
 
-print("Solution found!")
-
-X1 = 80.8
-X2 = 84.6
-Y = 9.4
-Z = 66.2
-
-A11 = A11.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A12 = A12.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A13 = A13.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A14 = A14.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-
-A21 = A21.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A22 = A22.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A23 = A23.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A24 = A24.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-
-A31 = A31.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A32 = A32.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A33 = A33.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A34 = A34.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-
-A41 = A41.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A42 = A42.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A43 = A43.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-A44 = A44.evalf(subs={X1: 80.8, X2: 84.6, Y: 9.4, Z: 66.2})
-
-# print(str (A11))
-# print(str (A12))
-# print(str (A11))
-# print(str (A14))
-#
-# print(str (A21))
-# print(str (A22))
-# print(str (A23))
-# print(str (A24))
-#
-# print(str (A31))
-# print(str (A32))
-# print(str (A31))
-# print(str (A34))
-#
-# print(str (A41))
-# print(str (A42))
-# print(str (A43))
-# print(str (A44))
-
-# J = np.matrix('A11 A12 A13 A14; A21 A22 A23 A24, A31 A32 A33 A34, A41 A42 A43 A44')
-J = np.matrix([[A11, A12, A13, A14], [A21, A22, A23, A24], [A31, A32, A33, A34],[A41, A42, A43, A44]])
-print(J)
-
-print("eigen")
-print(LA.eig(J))
+print("eigen: ")
+eigen_values = LA.eig(J1)[0]
+print(eigen_values)
 
