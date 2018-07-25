@@ -4,13 +4,14 @@ import numpy as np
 
 X1, X2, Y, Z = var("X1 X2 Y Z")
 d, c1, ke, H, l, j = var('d c1 ke H l j')
-e2, c2, c, h2, f2 = var('e2 c2 c h2 f2')
+e1, e2, c2, c, h2, f2 ,f1, h1, h = var('e1 e2 c2 c h2 f2 f1 h1 h')
 a, b, n, p, m, e = var('a b n p m e')
 
-E1 = (-d * X1) - (c1 * Y * (X1 / (1 + X1))) + (e ** (-ke * H) * j * (X1 / (1 + X1))) + (l * (X1 / (1 + X1)) * Z)
-E2 = (-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * e ** (-ke * H) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
-E3 = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n))) + ((p * (1 / e ** (-ke * H))) * (Y / (Y + 1)))
-E4 = (l * X1) + (f2 * X2) - (m * Z)
+E1 = (-e1 * X1) - (c1 * Y * (X1 / (1 + X1))) + (np.e ** (-ke * h) * h1 * (X1 / (1 + X1))) + (f1 * (X1 / (1 + X1)) * Z)
+
+E2 = (-e2 * X2) - (c2 * Y * (X2 / (1 + X2))) + (c * np.e ** (-ke * h) * h2 * (X2 / (1 + X2))) + (f2 * (X2 / (1 + X2)) * Z)
+E3 = (-a * Y) + ((b * X1) * (Y / (Y + 1)) * (1 - (Y / n))) + ((p * (1 / np.e ** (-ke * h))) * (Y / (Y + 1)))
+E4 = (f1 * X1) + (f2 * X2) - (m * Z)
 
 A11 = diff(E1, X1)
 A12 = diff(E1, X2)
@@ -52,23 +53,43 @@ print("A42: " + str(A42))
 print("A43: " + str(A43))
 print("A44: " + str(A44))
 
-a = .105
-b = 0.1
-c = 0.3
-p = .5
+a = .105  # predator adult mortality rate
+
+b = 0.1  # Benefit to the predator of predator adult consumption rate of weevil
+
+c = 0.3  # Negative impact of early harvesting on the weevil population (not being used)
+
+p = .5  # predator adult population gain from nymphs
+
 n = 10
-k = 100
-ke = .1635
-H = .8
-c1 = .15
-c2 = .05
-j = .5
-h2 = .3
-d = .15
-e2 = .15
-l = .2
-f2 = .2
+
+n1 = 100
+
+ke = .1635  # constant
+
+h = .8
+
+c1 = .15  # Negative impact on the aphids of predator consumption of aphids; previous values used: .1,2
+
+# !
+c2 = .05  # Negative impact on the weevil of predator consumption of weevil; previous values used: .03
+
+h1 = .5    # adult population gain (aphids)  # previous values used: .2
+
+h2 = .3     # adult population gain (weevil) previous values used: .2
+
+e1 = .15  # mortality of aphids; previous values used: .15, .3
+
+e2 = .15  # mortality of weevil; previous values used: .15, .3
+
+f1 = .2  # aphids pest consumption rate of alfalfa; previous values used: .15
+
+
+f2 = .2  # weevil pest consumption rate of alfalfa; previous values used: .15,
+
+
 m = .5
+
 
 X1 = 0
 X2 = 0
